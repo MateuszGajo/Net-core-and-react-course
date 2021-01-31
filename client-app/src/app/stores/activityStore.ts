@@ -17,7 +17,19 @@ class AcitivtyStore{
     target = '';
 
     get activitiesByDate() {
-        return Array.from(this.activityRegistry.values()).sort((a, b)=>Date.parse(a.date) - Date.parse(b.date))
+        return this.groupActivitiesByDate(Array.from(this.activityRegistry.values()));
+    }
+
+  groupActivitiesByDate(activites: IActivity[]){
+        const sortedActivities = activites.sort(
+            (a, b)=>Date.parse(a.date) - Date.parse(b.date)
+        )
+        return Object.entries(sortedActivities.reduce((activities,  activity)=>{
+            const date = activity.date.split("T")[0];
+
+            activities[date] = activities[date] ? [...activities[date],activity] : [activity];
+            return activities;
+        },{} as {[key: string]:IActivity[]}));
     }
 
     loadActivities = async ()=>{
