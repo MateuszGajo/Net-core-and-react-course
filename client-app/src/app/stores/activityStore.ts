@@ -11,10 +11,8 @@ class AcitivtyStore{
     }
 
     activityRegistry = new Map();
-    activities: IActivity[] = [];
-    selectedActivity: IActivity | undefined;
+    activity: IActivity | null = null;
     loadingInitital = false;
-    editMode = false;
     submitting = false;
     target = '';
 
@@ -40,13 +38,39 @@ class AcitivtyStore{
         }
     }
 
+    loadActivity = async (id:string) =>{
+        let activity = this.getActivity(id);
+        if(activity){ this.activity = activity;}
+        else {
+            this.loadingInitital = true;
+            try{
+                activity = await agent.Activities.details(id);
+                runInAction(()=>{
+                    this.activity = activity;
+                    this.loadingInitital = false
+                })
+            }catch(error){
+                runInAction(()=>{
+                    this.loadingInitital = false
+                })
+            }
+        }
+    }
+
+    clearActivity = ()=>{
+        this.activity = null;
+    }
+
+    getActivity = (id: string)=>{
+        return this.activityRegistry.get(id);
+    }
+
     createActivity = async (activity:IActivity)=>{
         this.submitting = true;
         try{
             await agent.Activities.create(activity);
             runInAction(()=>{
                 this.activityRegistry.set(activity.id, activity);
-                this.editMode=false;
                 this.submitting = false;
             })
            
@@ -64,8 +88,7 @@ class AcitivtyStore{
             await agent.Activities.update(activity);
             runInAction(()=>{
                 this.activityRegistry.set(activity.id, activity);
-                this.selectedActivity = activity;
-                this.editMode = false;
+                this.activity = activity;
                 this.submitting = false;
             })
             
@@ -93,30 +116,6 @@ class AcitivtyStore{
             this.target = '';
         })
     }
-
-    }
-
-     openCreateForm = ()=>{
-        this.editMode = true;
-        this.selectedActivity= undefined;
-    }
-
-    openEditForm = (id: string)=>{
-        this.selectedActivity = this.activityRegistry.get(id);
-        this.editMode = true;
-    }
-
-    cancelSelectedActivity = ()=>{
-        this.selectedActivity= undefined;
-    }
-
-    cancelFormOpen = ()=>{
-        this.editMode = false;
-    }
-
-     selectActivity = (id: string) =>{
-        this.selectedActivity = this.activityRegistry.get(id);
-        this.editMode= false;
     }
 }
 
