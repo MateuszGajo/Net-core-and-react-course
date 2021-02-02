@@ -10,7 +10,7 @@ namespace API.Controllers
 {
 
     [Route("api/[controller]")]
-    [ApiController]
+     [ApiController]
 
     public class ActivitiesController : ControllerBase
     {
