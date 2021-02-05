@@ -27,15 +27,12 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
   useEffect(() => {
     if (token) {
       getUser().finally(() => {
-        console.log("Here");
         setAppLoaded();
       });
     } else {
-      console.log("Here");
       setAppLoaded();
     }
   }, [getUser, setAppLoaded, token]);
-  console.log(appLoaded);
   if (!appLoaded) return <LoadingComponent content="Loading app..." />;
 
   return (

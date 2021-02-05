@@ -55,7 +55,6 @@ const RegisterForm = () => {
             component={TextInput}
             placeholder="Password"
           />
-          {console.log(submitError)}
           {submitError && !dirtySinceLastSubmit && (
             <ErrorMessage
               error={submitError}

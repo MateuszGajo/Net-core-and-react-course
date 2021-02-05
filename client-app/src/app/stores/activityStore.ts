@@ -5,6 +5,7 @@ import { IActivity } from "../models/activity";
 import {history} from "../..";
 import { toast } from "react-toastify";
 import { RootStore } from "./rootStore";
+import { createAttendee, setActivityProps } from "../common/util/util";
 
 export default class AcitivtyStore{
 
@@ -20,6 +21,7 @@ export default class AcitivtyStore{
     loadingInitital = false;
     submitting = false;
     target = '';
+    loading = false;
 
     get activitiesByDate() {
         return this.groupActivitiesByDate(Array.from(this.activityRegistry.values()));
@@ -43,9 +45,10 @@ export default class AcitivtyStore{
         const activities = await agent.Activities.list()
         runInAction(()=>{
             activities.forEach((activity) => {
-                 activity.date = new Date (activity.date);
+                setActivityProps(activity, this.rootStore.userStore.user!)
                 this.activityRegistry.set(activity.id, activity);
               });
+
               this.loadingInitital = false;
         })
         }catch(error){
@@ -66,7 +69,7 @@ export default class AcitivtyStore{
             try{
                 activity = await agent.Activities.details(id);
                 runInAction(()=>{
-                    activity.date = new Date(activity.date);
+                    setActivityProps(activity, this.rootStore.userStore.user!)
                     this.activity = activity;
                     this.activityRegistry.set(activity.id, activity);
                     this.loadingInitital = false
@@ -92,6 +95,12 @@ export default class AcitivtyStore{
         this.submitting = true;
         try{
             await agent.Activities.create(activity);
+            const attendee = createAttendee(this.rootStore.userStore.user!);
+            attendee.isHost = true;
+            let attendees = [];
+            attendees.push(attendee);
+            activity.attendees = attendees;
+            activity.isHost = true;
             runInAction(()=>{
                 this.activityRegistry.set(activity.id, activity);
                 this.submitting = false;
@@ -141,6 +150,51 @@ export default class AcitivtyStore{
             this.target = '';
         })
     }
+    }
+
+    attendActivity = async() =>{
+        const attendee = createAttendee(this.rootStore.userStore.user!);
+        this.loading = true;
+        try{
+            await agent.Activities.attend(this.activity!.id);
+            runInAction(()=>{
+                if(this.activity){
+                    this.activity.attendees.push(attendee);
+                    this.activity.isGoing = true;
+                    this.activityRegistry.set(this.activity.id, this.activity);
+                    this.loading = false;
+                }
+            })
+        }catch(error){
+            runInAction(()=>{
+                this.loading = false;
+            })
+            toast.error("Problem signing up to activity");
+        }
+    }
+
+    cancelAttendance = async () =>{
+        this.loading = true;
+        try{
+            agent.Activities.unAttend(this.activity!.id);
+            runInAction(()=>{
+                if(this.activity){
+                    this.activity.attendees = this.activity.attendees.filter(
+                        a => a.username !== this.rootStore.userStore.user!.username
+                    );
+        
+                    this.activity.isGoing = false;
+                    this.activityRegistry.set(this.activity.id, this.activity);
+                    this.loading = false;
+                }
+            })
+        }catch(error){
+            runInAction(()=>{
+                this.loading= false;
+            })
+            toast.error("Problem cancelling attendance")
+        }
+       
     }
 }
 
