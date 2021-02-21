@@ -1,24 +1,23 @@
-import { makeAutoObservable } from "mobx";
 import { RootStore } from "./rootStore";
+import { observable, action } from "mobx";
 
 export default class ModalStore {
-    rootStore: RootStore
-    constructor(rootStore: RootStore){
+    rootStore: RootStore;
+    constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
-        makeAutoObservable(this);
     }
-    //observable.shallow
-    modal ={
+
+    @observable.shallow modal = {
         open: false,
         body: null
     }
-
-    openModal = (content: any)=>{
+    
+    @action openModal = (content: any) => {
         this.modal.open = true;
         this.modal.body = content;
     }
 
-    closeModal =  ()=>{
+    @action closeModal = () => {
         this.modal.open = false;
         this.modal.body = null;
     }

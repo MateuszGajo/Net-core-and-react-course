@@ -1,16 +1,16 @@
-import { FORM_ERROR } from "final-form";
-import React, { useContext } from "react";
-import { Form as FinalForm, Field } from "react-final-form";
-import { combineValidators, isRequired } from "revalidate";
-import { Button, Form, Header } from "semantic-ui-react";
-import ErrorMessage from "../../app/common/form/ErrorMessage";
-import TextInput from "../../app/common/form/TextInput";
-import { IUserFormValues } from "../../app/models/user";
-import { RootStoreContext } from "../../app/stores/rootStore";
+import React, { useContext } from 'react';
+import { Form as FinalForm, Field } from 'react-final-form';
+import { Form, Button, Header } from 'semantic-ui-react';
+import TextInput from '../../app/common/form/TextInput';
+import { RootStoreContext } from '../../app/stores/rootStore';
+import { IUserFormValues } from '../../app/models/user';
+import { FORM_ERROR } from 'final-form';
+import { combineValidators, isRequired } from 'revalidate';
+import ErrorMessage from '../../app/common/form/ErrorMessage';
 
 const validate = combineValidators({
-  email: isRequired("email"),
-  password: isRequired("password"),
+  email: isRequired('Email'),
+  password: isRequired('Password')
 });
 
 const LoginForm = () => {
@@ -19,46 +19,44 @@ const LoginForm = () => {
   return (
     <FinalForm
       onSubmit={(values: IUserFormValues) =>
-        login(values).catch((error) => ({
-          [FORM_ERROR]: error,
+        login(values).catch(error => ({
+          [FORM_ERROR]: error
         }))
       }
       validate={validate}
       render={({
         handleSubmit,
         submitting,
-        form,
         submitError,
         invalid,
         pristine,
-        dirtySinceLastSubmit,
+        dirtySinceLastSubmit
       }) => (
         <Form onSubmit={handleSubmit} error>
           <Header
-            as="h2"
-            contnet="Login to Reactivities"
-            color="teal"
-            textAlign="center"
+            as='h2'
+            content='Login to Reactivities'
+            color='teal'
+            textAlign='center'
           />
-          <Field name="email" component={TextInput} placeholder="Email" />
+          <Field name='email' component={TextInput} placeholder='Email' />
           <Field
-            type="password"
-            name="password"
+            name='password'
             component={TextInput}
-            placeholder="Password"
+            placeholder='Password'
+            type='password'
           />
           {submitError && !dirtySinceLastSubmit && (
             <ErrorMessage
               error={submitError}
-              text="invalid username or password"
+              text='Invalid email or password'
             />
           )}
-          <br />
           <Button
             disabled={(invalid && !dirtySinceLastSubmit) || pristine}
             loading={submitting}
-            color="teal"
-            content="Login"
+            color='teal'
+            content='Login'
             fluid
           />
         </Form>

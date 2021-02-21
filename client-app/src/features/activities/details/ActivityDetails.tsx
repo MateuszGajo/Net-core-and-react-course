@@ -1,31 +1,33 @@
-import { observer } from "mobx-react-lite";
-import React, { useContext, useEffect } from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { Grid } from "semantic-ui-react";
-import LoadingComponent from "../../../app/layout/LoadingComponent";
-import { RootStoreContext } from "../../../app/stores/rootStore";
-import ActivityDetailedChat from "./ActivityDetailedChat";
-import ActivityDetailedHeader from "./ActivityDetailedHeader";
-import ActivityDetailedInfo from "./ActivityDetailedInfo";
-import ActivityDetailedSidebar from "./ActivityDetailedSidebar";
+import React, { useContext, useEffect } from 'react';
+import { Grid } from 'semantic-ui-react';
+import { observer } from 'mobx-react-lite';
+import { RouteComponentProps } from 'react-router';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
+import ActivityDetailedHeader from './ActivityDetailedHeader';
+import ActivityDetailedInfo from './ActivityDetailedInfo';
+import ActivityDetailedChat from './ActivityDetailedChat';
+import ActivityDetailedSidebar from './ActivityDetailedSidebar';
+import { RootStoreContext } from '../../../app/stores/rootStore';
 
-interface DetailsParams {
+interface DetailParams {
   id: string;
 }
 
-const ActivityDetails: React.FC<RouteComponentProps<DetailsParams>> = ({
+const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
+  history
 }) => {
   const rootStore = useContext(RootStoreContext);
-  const { activity, loadActivity, loadingInitital } = rootStore.activityStore;
+  const { activity, loadActivity, loadingInitial } = rootStore.activityStore;
 
   useEffect(() => {
     loadActivity(match.params.id);
-  }, [loadActivity, match.params.id]);
+  }, [loadActivity, match.params.id, history]);
 
-  if (loadingInitital)
-    return <LoadingComponent content="loading activity..." />;
+  if (loadingInitial) return <LoadingComponent content='Loading activity...' />;
+
   if (!activity) return <h2>Activity not found</h2>;
+
   return (
     <Grid>
       <Grid.Column width={10}>

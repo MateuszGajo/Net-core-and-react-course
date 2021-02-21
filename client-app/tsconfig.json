@@ -1,13 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "types": [ "node" ],
-"typeRoots": [ "../node_modules/@types" ],
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -20,11 +14,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "experimentalDecorators": true,
+    "jsx": "preserve",
+    "experimentalDecorators": true
   },
-  "include": [
-    "src",
-    "./typings-custom/**/*.ts"
-  ]
+  "include": ["src", "./typings-custom/**/*.ts"]
 }
