@@ -12,6 +12,7 @@ namespace Application.Followers
 {
     public class List
     {
+        
         public class Query : IRequest<List<Profile>> 
         {
             public string Username { get; set; }
