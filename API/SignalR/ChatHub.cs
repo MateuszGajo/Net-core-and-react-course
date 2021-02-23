@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace API.SignalR
             command.Username = username;
 
             var comment = await _mediator.Send(command);
+            Console.WriteLine("tutaj");
 
             await Clients.Group(command.ActivityId.ToString()).SendAsync("ReceiveComment", comment);
         }
