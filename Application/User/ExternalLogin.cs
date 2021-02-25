@@ -37,6 +37,15 @@ namespace Application.User
 
                 var user = await _userManager.FindByEmailAsync(userInfo.Email);
 
+                var refreshToken = _jwtGenerator.GenerateRefreshToken();
+
+                if(user !=null)
+                {
+                    user.RefreshTokens.Add(refreshToken);
+                    await _userManager.UpdateAsync(user);
+                    return new User(user, _jwtGenerator, refreshToken.Token);
+                }
+
                 if(user == null)
                 {
                     user = new AppUser 
@@ -44,7 +53,8 @@ namespace Application.User
                         DisplayName= userInfo.Name,
                         Id = userInfo.Id,
                         Email = userInfo.Email,
-                        UserName = "fb_" + userInfo.Id
+                        UserName = "fb_" + userInfo.Id,
+                        EmailConfirmed = true
                     };
 
                     var photo = new Photo{
@@ -54,18 +64,14 @@ namespace Application.User
                     };
 
                     user.Photos.Add(photo);
+                    user.RefreshTokens.Add(refreshToken);
 
                     var result = await _userManager.CreateAsync(user);
 
                     if(!result.Succeeded)
                         throw new RestException(HttpStatusCode.BadRequest, new {User = "Problem creating user"});   
                 }
-                  return new User{
-                            DisplayName = user.DisplayName,
-                            Token = _jwtGenerator.CreateToken(user),
-                            Username =user.UserName,
-                            Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
-                        };
+                  return new User(user, _jwtGenerator, refreshToken.Token);
             }
 
         }

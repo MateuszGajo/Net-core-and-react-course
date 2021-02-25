@@ -19,6 +19,8 @@ import LoadingComponent from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
 import ProfilePage from "../../features/profiles/ProfilePage";
 import PrivateRoute from "./PrivateRoute";
+import RegisterSuccess from "../../features/user/RegisterSuccess";
+import VerifyEmail from "../../features/user/VerifyEmail";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const rootStore = useContext(RootStoreContext);
@@ -26,12 +28,12 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
   const { getUser } = rootStore.userStore;
 
   useEffect(() => {
-    if (token) {
+    if (token && !appLoaded) {
       getUser().finally(() => setAppLoaded());
     } else {
       setAppLoaded();
     }
-  }, [getUser, setAppLoaded, token]);
+  }, [getUser, setAppLoaded, token, appLoaded]);
 
   if (!appLoaded) return <LoadingComponent content="Loading app..." />;
 
@@ -65,6 +67,11 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                   path="/profile/:username"
                   component={ProfilePage}
                 />
+                <Route
+                  path="/user/registerSuccess"
+                  component={RegisterSuccess}
+                />
+                <Route path="/user/verfiyEmail" component={VerifyEmail} />
                 <Route component={NotFound} />
               </Switch>
             </Container>
